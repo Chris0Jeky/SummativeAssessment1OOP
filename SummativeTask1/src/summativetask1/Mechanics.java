@@ -1,6 +1,5 @@
 package summativetask1;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -16,22 +15,61 @@ public class Mechanics {
     public static void initialise() {
         Player.addPlayerToList();
         Dice.addDiceToList();
-        int turnNumber = 0;
-        int playerNumber = 0;
-        int turnScore = 0;
+        runGame();
+    }
+    static int turnNumber = 0;
+    static int playerNumber = 0;
+    static int turnScore = 0;
+    static int throwCounter = 0;
+    static int removedDice = 0;
 
-        runGame(turnNumber, playerNumber, turnScore);
+    public static void runGame() {
+        boolean running = true;
+        while (running) {
+            System.out.println("Turn " + (turnNumber + 1) + " of 3");
+            System.out.println("Player " + (playerNumber + 1) + " of 3");
+
+            if (throwCounter > 0) {
+                System.out.println("Finish Turn or continue?");
+                System.out.println("Enter 'f' to finish turn or 'c' to continue");
+                Scanner scanner = new Scanner(System.in);
+                String input = scanner.nextLine();
+                if (input.equals("f")) {
+                    playerList[playerNumber].updateScore(turnNumber, turnScore);
+                    playerNumber++;
+                    if (playerNumber > 2) {
+                        playerNumber = 0;
+                        turnNumber++;
+                        throwCounter = 0;
+                        turnScore = 0;
+                        diceKeptThisTurn.clear();
+                        rolledDiceValuesThisTurn.clear();
+                        if (turnNumber > 2) {
+                            running = false;
+                        }
+                    }
+                    else {
+                        throwCounter = 0;
+                        turnScore = 0;
+                        diceKeptThisTurn.clear();
+                        rolledDiceValuesThisTurn.clear();
+                    }
+                }
+                else if (input.equals("c")) {
+                    continue;
+                }
+            }
+            gameOn();
+        }
     }
 
-    public static void runGame(int turnNumber, int playerNumber, int turnScore) {
-        System.out.println("Turn " + (turnNumber + 1) + " of 3");
-        System.out.println("Player " + (playerNumber + 1) + " of 3");
-        int removedDice = 0;
+    public static void gameOn() {
         System.out.println("Press 't' to roll the dice");
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
         if (input.equals("t")) {
             rollDiceList(removedDice);
+            throwCounter++;
         }
         System.out.println("Select a die value to set aside: ");
         int dieValue = scanner.nextInt();
@@ -121,7 +159,7 @@ public class Mechanics {
     public static String formatting(ArrayList<Integer> toFormat) {
         String formatted = "";
         for (int i = 0; i < toFormat.size(); i++) {
-            formatted += "[ " + toFormat.get(i) + "] ";
+            formatted += "[ " + toFormat.get(i) + " ] ";
         }
         return formatted;
     }
